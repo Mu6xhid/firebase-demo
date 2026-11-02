@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -18,9 +17,10 @@ class _AuthScreenState extends State<AuthScreen> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
-  final phonecontroller =TextEditingController();
-  final agecontroller =TextEditingController();
-  final citycontroller =TextEditingController();
+  final phonecontroller = TextEditingController();
+  final agecontroller = TextEditingController();
+  final citycontroller = TextEditingController();
+
   final FirebaseAuth auth = FirebaseAuth.instance;
 
   bool isSignUp = true;
@@ -46,24 +46,24 @@ class _AuthScreenState extends State<AuthScreen> {
         password: password,
       );
 
-      final user =credential.user!;
-      
+      final user = credential.user!;
+
       await user.updateDisplayName(
         nameController.text.trim(),
       );
 
       await FirebaseFirestore.instance
-      .collection('users')
-      .doc(user.uid)
-      .set({
-        'uid':user.uid,
+          .collection('users')
+          .doc(user.uid)
+          .set({
+        'uid': user.uid,
         'name': nameController.text.trim(),
         'email': email.trim(),
         'phone': phonecontroller.text.trim(),
         'age': int.parse(agecontroller.text.trim()),
         'city': citycontroller.text.trim(),
         'createdAt': FieldValue.serverTimestamp(),
-        });
+      });
 
       print('Signup successful!');
       print('User UID: ${user.uid}');
@@ -216,47 +216,10 @@ class _AuthScreenState extends State<AuthScreen> {
                 ),
 
                 const SizedBox(height: 20),
-TextFormField(
-  controller: agecontroller,
-  keyboardType: TextInputType.number,
-  decoration: const InputDecoration(
-    labelText: 'Age',
-    prefixIcon: Icon(Icons.cake),
-    border: OutlineInputBorder(),
-  ),
-  validator: (value) {
-    if (value == null || value.trim().isEmpty) {
-      return 'Please enter your age';
-    }
 
-    final age = int.tryParse(value.trim());
-
-    if (age == null || age < 1 || age > 120) {
-      return 'Please enter a valid age';
-    }
-
-    return null;
-  },
-),
-const SizedBox(height: 15),
-
-TextFormField(
-  controller: citycontroller,
-  decoration: const InputDecoration(
-    labelText: 'City',
-    prefixIcon: Icon(Icons.location_city),
-    border: OutlineInputBorder(),
-  ),
-  validator: (value) {
-    if (value == null || value.trim().isEmpty) {
-      return 'Please enter your city';
-    }
-    return null;
-  },
-),
-const SizedBox(height: 15),
-                // Name field
+                // SIGN UP ONLY FIELDS
                 if (isSignUp) ...[
+                  // Name
                   TextFormField(
                     controller: nameController,
                     decoration: const InputDecoration(
@@ -276,26 +239,76 @@ const SizedBox(height: 15),
                       return null;
                     },
                   ),
+
+                  const SizedBox(height: 15),
+
+                  // Phone
+                  TextFormField(
+                    controller: phonecontroller,
+                    keyboardType: TextInputType.phone,
+                    decoration: const InputDecoration(
+                      labelText: 'Phone Number',
+                      prefixIcon: Icon(Icons.phone),
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Please enter your phone number';
+                      }
+
+                      return null;
+                    },
+                  ),
+
+                  const SizedBox(height: 15),
+
+                  // Age
+                  TextFormField(
+                    controller: agecontroller,
+                    keyboardType: TextInputType.number,
+                    decoration: const InputDecoration(
+                      labelText: 'Age',
+                      prefixIcon: Icon(Icons.cake),
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Please enter your age';
+                      }
+
+                      final age = int.tryParse(value.trim());
+
+                      if (age == null || age < 1 || age > 120) {
+                        return 'Please enter a valid age';
+                      }
+
+                      return null;
+                    },
+                  ),
+
+                  const SizedBox(height: 15),
+
+                  // City
+                  TextFormField(
+                    controller: citycontroller,
+                    decoration: const InputDecoration(
+                      labelText: 'City',
+                      prefixIcon: Icon(Icons.location_city),
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Please enter your city';
+                      }
+
+                      return null;
+                    },
+                  ),
+
                   const SizedBox(height: 15),
                 ],
 
-                TextFormField(
-  controller: phonecontroller,
-  keyboardType: TextInputType.phone,
-  decoration: const InputDecoration(
-    labelText: 'Phone Number',
-    prefixIcon: Icon(Icons.phone),
-    border: OutlineInputBorder(),
-  ),
-  validator: (value) {
-    if (value == null || value.trim().isEmpty) {
-      return 'Please enter your phone number';
-    }
-    return null;
-  },
-),
-const SizedBox(height: 15),
-
+                // EMAIL - BOTH SIGN UP AND SIGN IN
                 TextFormField(
                   controller: emailController,
                   keyboardType: TextInputType.emailAddress,
@@ -309,9 +322,8 @@ const SizedBox(height: 15),
                       return 'Please enter your email';
                     }
 
-                    if (!RegExp(
-                      r'^[^@\s]+@[^@\s]+\.[^@\s]+$',
-                    ).hasMatch(value.trim())) {
+                    if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$')
+                        .hasMatch(value.trim())) {
                       return 'Please enter a valid email';
                     }
 
@@ -321,8 +333,7 @@ const SizedBox(height: 15),
 
                 const SizedBox(height: 15),
 
-
-                // Password field
+                // PASSWORD - BOTH SIGN UP AND SIGN IN
                 TextFormField(
                   controller: passwordController,
                   obscureText: true,
@@ -344,9 +355,10 @@ const SizedBox(height: 15),
                   },
                 ),
 
-                // Confirm password field
+                // CONFIRM PASSWORD - SIGN UP ONLY
                 if (isSignUp) ...[
                   const SizedBox(height: 15),
+
                   TextFormField(
                     controller: confirmPasswordController,
                     obscureText: true,
@@ -371,6 +383,7 @@ const SizedBox(height: 15),
 
                 const SizedBox(height: 20),
 
+                // BUTTON
                 ElevatedButton(
                   onPressed: isLoading ? null : submitForm,
                   style: ElevatedButton.styleFrom(
@@ -388,12 +401,10 @@ const SizedBox(height: 15),
                           isSignUp ? 'Create Account' : 'Sign In',
                         ),
                 ),
-                
               ],
             ),
           ),
         ),
-        
       ),
     );
   }
